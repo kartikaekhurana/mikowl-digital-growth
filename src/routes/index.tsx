@@ -141,7 +141,7 @@ function useSubmit<T>(map: (raw: Record<string, string>) => T, fn: (data: T) => 
 function AuditForm() {
   const submitAuditFn = useServerFn(submitAudit);
   const { status, error, handleSubmit } = useSubmit<AuditInput>(
-    (r) => ({ name: r.name ?? "", practiceName: r.practiceName ?? "", website: r.website ?? "", city: r.city ?? "", specialty: r.specialty ?? "", email: r.email ?? "" }),
+    (r) => ({ name: r['name'] ?? "", practiceName: r['practiceName'] ?? "", website: r['website'] ?? "", city: r['city'] ?? "", specialty: r['specialty'] ?? "", email: r['email'] ?? "" }),
     (data) => submitAuditFn({ data }),
   );
   if (status === "sent") return <SuccessCard title="Request received." copy="Thank you — we'll take a focused look at your digital presence and reply to the email you provided shortly."/>;
@@ -151,7 +151,7 @@ function AuditForm() {
 function ContactForm() {
   const submitContactFn = useServerFn(submitContact);
   const { status, error, handleSubmit } = useSubmit<ContactInput>(
-    (r) => ({ name: r.name ?? "", email: r.email ?? "", business: r.business ?? "", website: r.website ?? "", location: r.location ?? "", message: r.message ?? "" }),
+    (r) => ({ name: r['name'] ?? "", email: r['email'] ?? "", business: r['business'] ?? "", website: r['website'] ?? "", location: r['location'] ?? "", message: r['message'] ?? "" }),
     (data) => submitContactFn({ data }),
   );
   if (status === "sent") return <SuccessCard title="Message sent." copy="Thank you for reaching out — we'll get back to you shortly."/>;
