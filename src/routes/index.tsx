@@ -113,4 +113,46 @@ function ScoreGrid() {
   return <div className="grid gap-3 sm:grid-cols-2">{scores.map(([title, copy, Icon], i) => <div key={title} className={`border border-border bg-background p-5 ${i === 4 ? "sm:col-span-2" : ""}`}><Icon className="size-5 text-primary"/><h3 className="mt-6 font-semibold">{title}</h3><p className="mt-1 text-sm text-muted-foreground">{copy}</p><div className="mt-5 h-1 overflow-hidden bg-secondary"><div className="h-full bg-primary" style={{ width: `${58 + i * 7}%` }}/></div></div>)}</div>;
 }
 
-function AuditForm() { const fields=["Name","Practice name","Website","City","Specialty","Email"]; return <form onSubmit={e=>e.preventDefault()} className="grid gap-4 border border-border bg-card p-6 shadow-sm md:grid-cols-2 md:p-8">{fields.map(x=><label key={x}><span className="mb-2 block text-xs font-semibold">{x}</span><input required={x==="Name"||x==="Email"} type={x==="Email"?"email":"text"} className="h-12 w-full border border-input bg-background px-3 outline-none transition-colors focus:border-primary"/></label>)}<Button type="submit" size="lg" className="mt-2 md:col-span-2">Analyse my presence <ArrowRight/></Button><p className="text-xs text-muted-foreground md:col-span-2">A focused diagnostic, not a generic sales form.</p></form> }
+type FormStatus = "idle" | "sending" | "sent" | "error";
+
+function useSubmit(fn: (data: Record<string, string>) => Promise<{ ok: boolean; error?: string }>) {
+  const [status, setStatus] = useState<FormStatus>("idle");
+  const [error, setError] = useState("");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const raw = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
+    const data = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v.trim()]));
+    setStatus("sending");
+    setError("");
+    try {
+      const res = await fn(data);
+      if (!res.ok) { setError(res.error || "Something went wrong. Please try again."); setStatus("error"); return; }
+      setStatus("sent");
+      form.reset();
+    } catch (err) {
+      console.error("Form submission failed:", err);
+      setError("Please check your details — a name and a valid email are required.");
+      setStatus("error");
+    }
+  };
+  return { status, error, handleSubmit };
+}
+
+function AuditForm() {
+  const submitAuditFn = useServerFn(submitAudit);
+  const { status, error, handleSubmit } = useSubmit((data) => submitAuditFn({ data }));
+  if (status === "sent") return <SuccessCard title="Request received." copy="Thank you — we'll take a focused look at your digital presence and reply to the email you provided shortly."/>;
+  return <form onSubmit={handleSubmit} className="grid gap-4 border border-border bg-card p-6 shadow-sm md:grid-cols-2 md:p-8">{["Name","Practice name","Website","City","Specialty","Email"].map(x=><label key={x}><span className="mb-2 block text-xs font-semibold">{x}{x==="Name"||x==="Email"?" *":""}</span><input required={x==="Name"||x==="Email"} name={x==="Practice name"?"practiceName":x.toLowerCase()} type={x==="Email"?"email":"text"} className="h-12 w-full border border-input bg-background px-3 outline-none transition-colors focus:border-primary"/></label>)}<Button type="submit" size="lg" disabled={status==="sending"} className="mt-2 md:col-span-2">{status==="sending"?<><Loader2 className="size-4 animate-spin"/> Sending…</>:<>Analyse my presence <ArrowRight/></>}</Button>{error&&<p className="flex items-center gap-2 text-sm text-destructive md:col-span-2"><CircleAlert className="size-4"/>{error}</p>}<p className="text-xs text-muted-foreground md:col-span-2">A focused diagnostic, not a generic sales form.</p></form>;
+}
+
+function ContactForm() {
+  const submitContactFn = useServerFn(submitContact);
+  const { status, error, handleSubmit } = useSubmit((data) => submitContactFn({ data }));
+  if (status === "sent") return <SuccessCard title="Message sent." copy="Thank you for reaching out — we'll get back to you shortly."/>;
+  return <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">{[["Name","name",true],["Email","email",true],["Practice / Business","business",false],["Website","website",false],["Location","location",false]].map(([label,name,required])=><label key={label as string}><span className="mb-2 block text-xs font-semibold">{label}{required?" *":""}</span><input required={required as boolean} name={name as string} type={name==="email"?"email":"text"} className="h-12 w-full border border-input bg-card px-3 outline-none transition-colors focus:border-primary"/></label>)}<label className="sm:col-span-2"><span className="mb-2 block text-xs font-semibold">What do you want to improve? *</span><textarea required name="message" className="min-h-28 w-full border border-input bg-card p-3 outline-none transition-colors focus:border-primary"/></label><Button type="submit" disabled={status==="sending"} className="mt-2 sm:col-span-2">{status==="sending"?<><Loader2 className="size-4 animate-spin"/> Sending…</>:<>Start the conversation <ArrowRight/></>}</Button>{error&&<p className="flex items-center gap-2 text-sm text-destructive sm:col-span-2"><CircleAlert className="size-4"/>{error}</p>}</form>;
+}
+
+function SuccessCard({ title, copy }: { title: string; copy: string }) {
+  return <div className="grid place-items-center border border-border bg-card p-10 text-center shadow-sm"><CircleCheck className="size-10 text-primary"/><h3 className="mt-5 text-2xl font-semibold">{title}</h3><p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{copy}</p></div>;
+}
