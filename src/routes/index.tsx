@@ -115,18 +115,15 @@ function ScoreGrid() {
 
 type FormStatus = "idle" | "sending" | "sent" | "error";
 
-function useSubmit(fn: (data: Record<string, string>) => Promise<{ ok: boolean; error?: string }>) {
+function useSubmit<T>(map: (raw: Record<string, string>) => T, fn: (data: T) => Promise<{ ok: boolean; error?: string }>) {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [error, setError] = useState("");
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const raw = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
-    const data = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v.trim()]));
-    setStatus("sending");
-    setError("");
     try {
-      const res = await fn(data);
+      const res = await fn(map(raw));
       if (!res.ok) { setError(res.error || "Something went wrong. Please try again."); setStatus("error"); return; }
       setStatus("sent");
       form.reset();
