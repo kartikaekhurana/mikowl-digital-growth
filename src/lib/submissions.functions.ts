@@ -2,6 +2,24 @@ import { createClient } from "@supabase/supabase-js";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+export interface AuditInput {
+  name: string;
+  practiceName: string;
+  website: string;
+  city: string;
+  specialty: string;
+  email: string;
+}
+
+export interface ContactInput {
+  name: string;
+  email: string;
+  business: string;
+  website: string;
+  location: string;
+  message: string;
+}
+
 const auditSchema = z.object({
   name: z.string().trim().min(1).max(120),
   practiceName: z.string().trim().max(160).default(""),
