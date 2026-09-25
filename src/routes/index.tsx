@@ -4,7 +4,7 @@ import { ArrowDown, ArrowRight, BarChart3, ChevronRight, CircleCheck, CircleAler
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { submitAudit, submitContact } from "@/lib/submissions.functions";
+import { submitAudit, submitContact, type AuditInput, type ContactInput } from "@/lib/submissions.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
