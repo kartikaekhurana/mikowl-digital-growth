@@ -122,6 +122,8 @@ function useSubmit<T>(map: (raw: Record<string, string>) => T, fn: (data: T) => 
     e.preventDefault();
     const form = e.currentTarget;
     const raw = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
+    setStatus("sending");
+    setError("");
     try {
       const res = await fn(map(raw));
       if (!res.ok) { setError(res.error || "Something went wrong. Please try again."); setStatus("error"); return; }
@@ -138,7 +140,10 @@ function useSubmit<T>(map: (raw: Record<string, string>) => T, fn: (data: T) => 
 
 function AuditForm() {
   const submitAuditFn = useServerFn(submitAudit);
-  const { status, error, handleSubmit } = useSubmit((data) => submitAuditFn({ data }));
+  const { status, error, handleSubmit } = useSubmit<AuditInput>(
+    (r) => ({ name: r.name ?? "", practiceName: r.practiceName ?? "", website: r.website ?? "", city: r.city ?? "", specialty: r.specialty ?? "", email: r.email ?? "" }),
+    (data) => submitAuditFn({ data }),
+  );
   if (status === "sent") return <SuccessCard title="Request received." copy="Thank you — we'll take a focused look at your digital presence and reply to the email you provided shortly."/>;
   return <form onSubmit={handleSubmit} className="grid gap-4 border border-border bg-card p-6 shadow-sm md:grid-cols-2 md:p-8">{["Name","Practice name","Website","City","Specialty","Email"].map(x=><label key={x}><span className="mb-2 block text-xs font-semibold">{x}{x==="Name"||x==="Email"?" *":""}</span><input required={x==="Name"||x==="Email"} name={x==="Practice name"?"practiceName":x.toLowerCase()} type={x==="Email"?"email":"text"} className="h-12 w-full border border-input bg-background px-3 outline-none transition-colors focus:border-primary"/></label>)}<Button type="submit" size="lg" disabled={status==="sending"} className="mt-2 md:col-span-2">{status==="sending"?<><Loader2 className="size-4 animate-spin"/> Sending…</>:<>Analyse my presence <ArrowRight/></>}</Button>{error&&<p className="flex items-center gap-2 text-sm text-destructive md:col-span-2"><CircleAlert className="size-4"/>{error}</p>}<p className="text-xs text-muted-foreground md:col-span-2">A focused diagnostic, not a generic sales form.</p></form>;
 }
