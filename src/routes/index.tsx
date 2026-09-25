@@ -150,7 +150,10 @@ function AuditForm() {
 
 function ContactForm() {
   const submitContactFn = useServerFn(submitContact);
-  const { status, error, handleSubmit } = useSubmit((data) => submitContactFn({ data }));
+  const { status, error, handleSubmit } = useSubmit<ContactInput>(
+    (r) => ({ name: r.name ?? "", email: r.email ?? "", business: r.business ?? "", website: r.website ?? "", location: r.location ?? "", message: r.message ?? "" }),
+    (data) => submitContactFn({ data }),
+  );
   if (status === "sent") return <SuccessCard title="Message sent." copy="Thank you for reaching out — we'll get back to you shortly."/>;
   return <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">{[["Name","name",true],["Email","email",true],["Practice / Business","business",false],["Website","website",false],["Location","location",false]].map(([label,name,required])=><label key={label as string}><span className="mb-2 block text-xs font-semibold">{label}{required?" *":""}</span><input required={required as boolean} name={name as string} type={name==="email"?"email":"text"} className="h-12 w-full border border-input bg-card px-3 outline-none transition-colors focus:border-primary"/></label>)}<label className="sm:col-span-2"><span className="mb-2 block text-xs font-semibold">What do you want to improve? *</span><textarea required name="message" className="min-h-28 w-full border border-input bg-card p-3 outline-none transition-colors focus:border-primary"/></label><Button type="submit" disabled={status==="sending"} className="mt-2 sm:col-span-2">{status==="sending"?<><Loader2 className="size-4 animate-spin"/> Sending…</>:<>Start the conversation <ArrowRight/></>}</Button>{error&&<p className="flex items-center gap-2 text-sm text-destructive sm:col-span-2"><CircleAlert className="size-4"/>{error}</p>}</form>;
 }
