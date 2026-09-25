@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowDown, ArrowRight, BarChart3, ChevronRight, CircleCheck, ExternalLink, Linkedin, Menu, Search, ShieldCheck, Sparkles, X } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { ArrowDown, ArrowRight, BarChart3, ChevronRight, CircleCheck, CircleAlert, ExternalLink, Linkedin, Loader2, Menu, Search, ShieldCheck, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { submitAudit, submitContact } from "@/lib/submissions.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
