@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowDown, ArrowRight, BarChart3, ChevronRight, CircleCheck, ExternalLink, Linkedin, Menu, Search, ShieldCheck, Sparkles, X } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { ArrowDown, ArrowRight, BarChart3, ChevronRight, CircleCheck, CircleAlert, ExternalLink, Linkedin, Loader2, Menu, Search, ShieldCheck, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { submitAudit, submitContact, type AuditInput, type ContactInput } from "@/lib/submissions.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -87,11 +89,11 @@ function Index() {
 
     <section id="work" className="py-24 md:py-36"><div className="mx-auto max-w-7xl px-5 lg:px-8"><SectionTitle eyebrow="Selected work" title="A few businesses we’ve helped build digitally."/><div className="mt-14 grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2">{projects.map(([name,cat,scope,url],i)=><a key={name} href={url} target="_blank" rel="noreferrer" className="group bg-card p-7 md:p-9"><div className="mb-12 flex h-40 items-end border border-border bg-secondary p-5 transition-transform duration-500 group-hover:-translate-y-1"><span className="font-display text-3xl font-semibold text-muted-foreground/60">{String(i+1).padStart(2,"0")}</span></div><p className="text-xs uppercase text-primary">{cat}</p><div className="mt-3 flex items-center justify-between"><h3 className="text-2xl font-semibold">{name}</h3><ExternalLink className="size-5 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"/></div><p className="mt-3 text-sm text-muted-foreground">{scope}</p></a>)}</div></div></section>
 
-    <section id="about" className="border-y border-border bg-card py-24 md:py-36"><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="grid gap-16 lg:grid-cols-2"><div><SectionTitle eyebrow="Healthcare specialisation" title="Built around the way healthcare practices actually work." copy="Practitioners bring the clinical expertise. MikOwl handles the digital layer, so patients get a clearer journey and practices can focus on the work that matters."/><div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">{["Doctor — Healthcare expertise","MikOwl — Digital expertise","Patient — Better journey"].map((x,i)=><div key={x} className="flex items-center gap-3"><span className="border border-border bg-background px-4 py-3 text-xs font-semibold">{x}</span>{i<2&&<ArrowRight className="hidden size-4 text-primary sm:block"/>}</div>)}</div></div><div className="border-l border-border pl-7 md:pl-12"><p className="text-xs font-bold uppercase text-primary">Founder</p><div className="mt-8 grid aspect-[4/3] place-items-center bg-foreground text-background"><div className="text-center"><span className="text-5xl font-semibold">KK</span><p className="mt-3 text-xs text-background/50">Founder portrait forthcoming</p></div></div><h3 className="mt-7 text-3xl font-semibold">Built by Kartikae Khurana.</h3><p className="mt-2 text-sm text-muted-foreground">Founder, MikOwl Software Solutions</p><blockquote className="mt-6 text-lg leading-8">“Technology shouldn’t make business owners feel more complicated. It should make their business work better.”</blockquote><p className="mt-5 text-sm leading-6 text-muted-foreground">MikOwl was created around a simple observation: many great businesses have strong real-world services but an underdeveloped digital presence. MikOwl exists to close that gap.</p><span className="mt-6 inline-flex items-center gap-2 text-sm text-muted-foreground"><Linkedin className="size-4"/> Verified LinkedIn link forthcoming</span></div></div></div></section>
+    <section id="about" className="border-y border-border bg-card py-24 md:py-36"><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="grid gap-16 lg:grid-cols-2"><div><SectionTitle eyebrow="Healthcare specialisation" title="Built around the way healthcare practices actually work." copy="Practitioners bring the clinical expertise. MikOwl handles the digital layer, so patients get a clearer journey and practices can focus on the work that matters."/><div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">{["Doctor — Healthcare expertise","MikOwl — Digital expertise","Patient — Better journey"].map((x,i)=><div key={x} className="flex items-center gap-3"><span className="border border-border bg-background px-4 py-3 text-xs font-semibold">{x}</span>{i<2&&<ArrowRight className="hidden size-4 text-primary sm:block"/>}</div>)}</div></div><div className="border-l border-border pl-7 md:pl-12"><p className="text-xs font-bold uppercase text-primary">Founder</p><div className="mt-8 grid aspect-[4/3] place-items-center bg-foreground text-background"><div className="text-center"><span className="text-5xl font-semibold">KK</span><p className="mt-3 text-xs text-background/50">Founder portrait forthcoming</p></div></div><h3 className="mt-7 text-3xl font-semibold">Built by Kartikae Khurana.</h3><p className="mt-2 text-sm text-muted-foreground">Founder, MikOwl Software Solutions</p><blockquote className="mt-6 text-lg leading-8">“Technology shouldn’t make business owners feel more complicated. It should make their business work better.”</blockquote><p className="mt-5 text-sm leading-6 text-muted-foreground">MikOwl was created around a simple observation: many great businesses have strong real-world services but an underdeveloped digital presence. MikOwl exists to close that gap.</p><a href="https://in.linkedin.com/in/kartikae-khurana-631679164" target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"><Linkedin className="size-4"/> Connect on LinkedIn<ArrowRight className="size-3.5"/></a></div></div></div></section>
 
     <section id="audit" className="py-24 md:py-36"><div className="mx-auto grid max-w-7xl gap-14 px-5 lg:grid-cols-[.8fr_1.2fr] lg:px-8"><SectionTitle eyebrow="Digital audit" title="Wondering how your practice looks online?" copy="Let’s find the gaps before your competitors do."/><AuditForm/></div></section>
 
-    <section id="contact" className="border-t border-border py-24"><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="grid gap-10 lg:grid-cols-2"><SectionTitle eyebrow="Start a conversation" title="Let’s make your digital presence work harder." copy="No hard sell. Just a clear look at where your digital presence stands."/><div className="grid gap-4 sm:grid-cols-2">{["Name","Email","Practice / Business","Website","Location","What do you want to improve?"].map((x,i)=><label key={x} className={i===5?"sm:col-span-2":""}><span className="mb-2 block text-xs font-semibold">{x}</span>{i===5?<textarea className="min-h-28 w-full border border-input bg-card p-3 outline-none focus:border-primary"/>:<input className="h-12 w-full border border-input bg-card px-3 outline-none focus:border-primary"/>}</label>)}<Button className="mt-2 sm:col-span-2">Start the conversation <ArrowRight/></Button></div></div></div></section>
+    <section id="contact" className="border-t border-border py-24"><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="grid gap-10 lg:grid-cols-2"><SectionTitle eyebrow="Start a conversation" title="Let’s make your digital presence work harder." copy="No hard sell. Just a clear look at where your digital presence stands."/><ContactForm/></div></div></section>
 
     <section className="bg-primary py-24 text-primary-foreground md:py-32"><div className="mx-auto max-w-7xl px-5 lg:px-8"><p className="text-xs font-bold uppercase text-primary-foreground/70">The digital side, handled</p><h2 className="mt-6 max-w-5xl text-5xl font-semibold leading-[1.05] md:text-7xl">Your practice already does the hard part.<br/><span className="text-primary-foreground/65">Let MikOwl build the digital side.</span></h2><Button asChild size="lg" className="mt-10 bg-background text-foreground hover:bg-background/90"><a href="#audit"><ArrowLink>Get Your Digital Audit</ArrowLink></a></Button></div></section>
     <footer className="bg-foreground py-14 text-background"><div className="mx-auto grid max-w-7xl gap-10 px-5 md:grid-cols-3 lg:px-8"><div><p className="font-display text-xl font-bold">Mik<span className="text-primary">Owl.</span></p><p className="mt-4 max-w-sm text-sm leading-6 text-background/55">Digital transformation for practices that want to be found, trusted and chosen.</p></div><div className="text-sm text-background/55"><p className="font-semibold text-background">Kartikae Khurana</p><p>Founder, MikOwl Software Solutions</p></div><p className="text-sm text-background/45 md:text-right">© 2026 MikOwl Software Solutions.</p></div></footer>
@@ -111,4 +113,51 @@ function ScoreGrid() {
   return <div className="grid gap-3 sm:grid-cols-2">{scores.map(([title, copy, Icon], i) => <div key={title} className={`border border-border bg-background p-5 ${i === 4 ? "sm:col-span-2" : ""}`}><Icon className="size-5 text-primary"/><h3 className="mt-6 font-semibold">{title}</h3><p className="mt-1 text-sm text-muted-foreground">{copy}</p><div className="mt-5 h-1 overflow-hidden bg-secondary"><div className="h-full bg-primary" style={{ width: `${58 + i * 7}%` }}/></div></div>)}</div>;
 }
 
-function AuditForm() { const fields=["Name","Practice name","Website","City","Specialty","Email"]; return <form onSubmit={e=>e.preventDefault()} className="grid gap-4 border border-border bg-card p-6 shadow-sm md:grid-cols-2 md:p-8">{fields.map(x=><label key={x}><span className="mb-2 block text-xs font-semibold">{x}</span><input required={x==="Name"||x==="Email"} type={x==="Email"?"email":"text"} className="h-12 w-full border border-input bg-background px-3 outline-none transition-colors focus:border-primary"/></label>)}<Button type="submit" size="lg" className="mt-2 md:col-span-2">Analyse my presence <ArrowRight/></Button><p className="text-xs text-muted-foreground md:col-span-2">A focused diagnostic, not a generic sales form.</p></form> }
+type FormStatus = "idle" | "sending" | "sent" | "error";
+
+function useSubmit<T>(map: (raw: Record<string, string>) => T, fn: (data: T) => Promise<{ ok: boolean; error?: string }>) {
+  const [status, setStatus] = useState<FormStatus>("idle");
+  const [error, setError] = useState("");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const raw = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
+    setStatus("sending");
+    setError("");
+    try {
+      const res = await fn(map(raw));
+      if (!res.ok) { setError(res.error || "Something went wrong. Please try again."); setStatus("error"); return; }
+      setStatus("sent");
+      form.reset();
+    } catch (err) {
+      console.error("Form submission failed:", err);
+      setError("Please check your details — a name and a valid email are required.");
+      setStatus("error");
+    }
+  };
+  return { status, error, handleSubmit };
+}
+
+function AuditForm() {
+  const submitAuditFn = useServerFn(submitAudit);
+  const { status, error, handleSubmit } = useSubmit<AuditInput>(
+    (r) => ({ name: r['name'] ?? "", practiceName: r['practiceName'] ?? "", website: r['website'] ?? "", city: r['city'] ?? "", specialty: r['specialty'] ?? "", email: r['email'] ?? "" }),
+    (data) => submitAuditFn({ data }),
+  );
+  if (status === "sent") return <SuccessCard title="Request received." copy="Thank you — we'll take a focused look at your digital presence and reply to the email you provided shortly."/>;
+  return <form onSubmit={handleSubmit} className="grid gap-4 border border-border bg-card p-6 shadow-sm md:grid-cols-2 md:p-8">{["Name","Practice name","Website","City","Specialty","Email"].map(x=><label key={x}><span className="mb-2 block text-xs font-semibold">{x}{x==="Name"||x==="Email"?" *":""}</span><input required={x==="Name"||x==="Email"} name={x==="Practice name"?"practiceName":x.toLowerCase()} type={x==="Email"?"email":"text"} className="h-12 w-full border border-input bg-background px-3 outline-none transition-colors focus:border-primary"/></label>)}<Button type="submit" size="lg" disabled={status==="sending"} className="mt-2 md:col-span-2">{status==="sending"?<><Loader2 className="size-4 animate-spin"/> Sending…</>:<>Analyse my presence <ArrowRight/></>}</Button>{error&&<p className="flex items-center gap-2 text-sm text-destructive md:col-span-2"><CircleAlert className="size-4"/>{error}</p>}<p className="text-xs text-muted-foreground md:col-span-2">A focused diagnostic, not a generic sales form.</p></form>;
+}
+
+function ContactForm() {
+  const submitContactFn = useServerFn(submitContact);
+  const { status, error, handleSubmit } = useSubmit<ContactInput>(
+    (r) => ({ name: r['name'] ?? "", email: r['email'] ?? "", business: r['business'] ?? "", website: r['website'] ?? "", location: r['location'] ?? "", message: r['message'] ?? "" }),
+    (data) => submitContactFn({ data }),
+  );
+  if (status === "sent") return <SuccessCard title="Message sent." copy="Thank you for reaching out — we'll get back to you shortly."/>;
+  return <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">{[["Name","name",true],["Email","email",true],["Practice / Business","business",false],["Website","website",false],["Location","location",false]].map(([label,name,required])=><label key={label as string}><span className="mb-2 block text-xs font-semibold">{label}{required?" *":""}</span><input required={required as boolean} name={name as string} type={name==="email"?"email":"text"} className="h-12 w-full border border-input bg-card px-3 outline-none transition-colors focus:border-primary"/></label>)}<label className="sm:col-span-2"><span className="mb-2 block text-xs font-semibold">What do you want to improve? *</span><textarea required name="message" className="min-h-28 w-full border border-input bg-card p-3 outline-none transition-colors focus:border-primary"/></label><Button type="submit" disabled={status==="sending"} className="mt-2 sm:col-span-2">{status==="sending"?<><Loader2 className="size-4 animate-spin"/> Sending…</>:<>Start the conversation <ArrowRight/></>}</Button>{error&&<p className="flex items-center gap-2 text-sm text-destructive sm:col-span-2"><CircleAlert className="size-4"/>{error}</p>}</form>;
+}
+
+function SuccessCard({ title, copy }: { title: string; copy: string }) {
+  return <div className="grid place-items-center border border-border bg-card p-10 text-center shadow-sm"><CircleCheck className="size-10 text-primary"/><h3 className="mt-5 text-2xl font-semibold">{title}</h3><p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{copy}</p></div>;
+}
